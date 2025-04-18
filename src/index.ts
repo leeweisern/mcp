@@ -4,6 +4,7 @@ import { z } from "zod"
 import * as AWS from "aws-sdk"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { createOpenAI } from "@ai-sdk/openai"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { handle } from "hono/aws-lambda"
 import { Resource } from "sst"
 import { pgReportingClient, pgEveryClient, ensurePgReportingClient, ensurePgEveryClient } from "./db"
@@ -45,6 +46,10 @@ const anthropicProvider = createAnthropic({
 
 const openaiProvider = createOpenAI({
   apiKey: Resource.OPENAI_KEY.value
+})
+
+const googleProvider = createGoogleGenerativeAI({
+  apiKey: Resource.GOOGLE_KEY.value
 })
 
 const database_query_readonly_reporting = tool({
@@ -128,6 +133,7 @@ const app = create({
     database_query_readonly_every,
     database_query_write_every
   ],
+  // model: googleProvider("gemini-2.5-pro-preview-03-25"),
   model: openaiProvider("gpt-4.1-mini"),
   // model: anthropicProvider("claude-3-7-sonnet-latest"),
 })

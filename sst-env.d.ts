@@ -9,6 +9,10 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
+    "GOOGLE_KEY": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
     "OPENAI_KEY": {
       "type": "sst.sst.Secret"
       "value": string

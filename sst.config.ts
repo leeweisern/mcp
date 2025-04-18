@@ -23,6 +23,7 @@ export default $config({
     const pgReportingDbName = new sst.Secret("PG_REPORTING_DB_NAME")
     const pgUser = new sst.Secret("PG_USER")
     const openAIKey = new sst.Secret("OPENAI_KEY")
+    const googleKey = new sst.Secret("GOOGLE_KEY")
 
     const vpcConfig = {
       privateSubnets: ["subnet-0e48b4a313f737af1"],
@@ -46,7 +47,8 @@ export default $config({
           pgPort,
           pgPwd,
           pgReportingDbName,
-          pgUser
+          pgUser,
+          googleKey
         ],
         policies: [
           "arn:aws:iam::aws:policy/ReadOnlyAccess",
