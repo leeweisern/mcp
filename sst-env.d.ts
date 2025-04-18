@@ -9,6 +9,50 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
+    "PG_DB_HOST": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_DB_PASSWORD": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_DB_PORT": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_DB_READ_HOST": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_DB_USER": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_EVERY_DB_NAME": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_HOST": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_PORT": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_PWD": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_REPORTING_DB_NAME": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PG_USER": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
   }
 }
 /// <reference path="sst-env.d.ts" />
