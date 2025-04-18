@@ -22,6 +22,7 @@ export default $config({
     const pgPwd = new sst.Secret("PG_PWD")
     const pgReportingDbName = new sst.Secret("PG_REPORTING_DB_NAME")
     const pgUser = new sst.Secret("PG_USER")
+    const openAIKey = new sst.Secret("OPENAI_KEY")
 
     const vpcConfig = {
       privateSubnets: ["subnet-0e48b4a313f737af1"],
@@ -34,6 +35,7 @@ export default $config({
         handler: "src/index.handler",
         link: [
           anthropicKey,
+          openAIKey,
           pgDbHost,
           pgDbPassword,
           pgDbPort,
@@ -47,7 +49,7 @@ export default $config({
           pgUser
         ],
         policies: [
-          "arn:aws:iam::aws:policy/AdministratorAccess",
+          "arn:aws:iam::aws:policy/ReadOnlyAccess",
           "arn:aws:iam::aws:policy/AWSBillingReadOnlyAccess"
         ]
       },

@@ -3,30 +3,32 @@ import { tool } from "opencontrol/tool"
 import { z } from "zod"
 import * as AWS from "aws-sdk"
 import { createAnthropic } from "@ai-sdk/anthropic"
+import { createOpenAI } from "@ai-sdk/openai"
 import { handle } from "hono/aws-lambda"
 import { Resource } from "sst"
-import { Client } from "pg"
 import { pgReportingClient, pgEveryClient, ensurePgReportingClient, ensurePgEveryClient } from "./db"
 
 const aws = tool({
   name: "aws",
-  description: "Make a call to the AWS SDK for JavaScript v2",
+  description: "Make a call to the AWS SDK for JavaScript v2. NOTE: Command names must be in lowerCamelCase (e.g., 'getCostAndUsage').",
   args: z.object({
-    client: z.string().describe("Class name of the client to use"),
-    command: z.string().describe("Function to call on the AWS sdk client"),
+    client: z.string().describe("Class name of the client to use (e.g., 'S3', 'CostExplorer')"),
+    command: z.string().describe("Function to call on the AWS sdk client, in lowerCamelCase (e.g., 'listBuckets', 'getCostAndUsage')"),
     params: z.string().describe("Arguments to pass to the command as JSON"),
   }),
   async run(input) {
     // @ts-ignore - Consider adding proper typing or error handling for AWS client/command existence
     const client = AWS[input.client]
     if (!client) throw new Error(`Client ${input.client} not found`)
-    const instance = new client()
+    // Explicitly set region from environment variables
+    const instance = new client({ region: 'ap-southeast-1' });
     const cmd = instance[input.command]
     if (!cmd) throw new Error(`Command ${input.command} not found`)
     // It's safer to parse JSON inside a try/catch
     try {
       const params = JSON.parse(input.params);
-      return await cmd(params).promise();
+      // Use .call() to ensure 'this' context is correct
+      return await cmd.call(instance, params).promise();
     } catch (e) {
       if (e instanceof SyntaxError) {
         throw new Error(`Invalid JSON parameters provided: ${e.message}`);
@@ -39,6 +41,10 @@ const aws = tool({
 // Create an Anthropic provider with the API key from SST
 const anthropicProvider = createAnthropic({
   apiKey: Resource.AnthropicKey.value
+})
+
+const openaiProvider = createOpenAI({
+  apiKey: Resource.OPENAI_KEY.value
 })
 
 const database_query_readonly_reporting = tool({
@@ -80,7 +86,7 @@ const database_query_write_reporting = tool({
 const database_query_readonly_every = tool({
   name: "database_query_readonly_every",
   description:
-    "Readonly database query for PostgreSQL (every DB), use this if there are no direct tools",
+    "Readonly database query for PostgreSQL (Every DB). For payment and transaction related queries, use tables: vw_payment_details and vw_transaction_details. IMPORTANT: Before filtering by 'payment_status' or 'transaction_status', ALWAYS query the DISTINCT available statuses from the relevant table first (e.g., 'SELECT DISTINCT payment_status FROM vw_payment_details;'). Do NOT assume common status values like 'SUCCESS', as they may not exist. Time in database is in UTC.",
   args: z.object({ query: z.string() }),
   async run(input) {
     await ensurePgEveryClient();
@@ -122,7 +128,8 @@ const app = create({
     database_query_readonly_every,
     database_query_write_every
   ],
-  model: anthropicProvider("claude-3-7-sonnet-latest"),
+  model: openaiProvider("gpt-4.1-mini"),
+  // model: anthropicProvider("claude-3-7-sonnet-latest"),
   password: "password", // Consider using environment variables for password
 })
 
