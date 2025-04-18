@@ -130,7 +130,6 @@ const app = create({
   ],
   model: openaiProvider("gpt-4.1-mini"),
   // model: anthropicProvider("claude-3-7-sonnet-latest"),
-  password: "password", // Consider using environment variables for password
 })
 
 // Export the handler function for Lambda

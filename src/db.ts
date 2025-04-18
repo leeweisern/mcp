@@ -3,7 +3,7 @@ import { Client } from "pg"
 
 // Reporting DB
 const pgReportingClient = new Client({
-    host: Resource.PG_DB_READ_HOST.value,
+    host: process.env.PG_DB_READ_HOST || Resource.PG_DB_READ_HOST.value,
     port: Number(Resource.PG_PORT.value),
     user: Resource.PG_USER.value,
     password: Resource.PG_PWD.value,

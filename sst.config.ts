@@ -29,7 +29,7 @@ export default $config({
       securityGroups: ["sg-0a25fef8c6fcf9c21"],
     };
 
-    const server = new sst.aws.OpenControl("MyServer", {
+    const server = new sst.aws.OpenControl("MCP", {
       server: {
         vpc: $app.stage === "production" ? vpcConfig : undefined,
         handler: "src/index.handler",
